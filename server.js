@@ -115,22 +115,22 @@ function sendVonageMessage(teneoResponse, post, res) {
     },
   ];
 
-  // const hangupAction = [
-  //   {
-  //     action: "talk",
-  //     eventType: "synchronous",
-  //     text: teneoResponse.output.text,
-  //     voiceName: voiceName,
-  //     bargeIn: false,
-  //     loop: 1,
-  //   },
-  //   {
-  //     action: "hangup",
-  //     eventType: "synchronous",
-  //   },
-  // ];
-
   const hangupAction = [
+     {
+       action: "talk",
+       eventType: "synchronous",
+       text: teneoResponse.output.text,
+       voiceName: voiceName,
+       bargeIn: false,
+       loop: 1,
+     },
+     {
+       action: "hangup",
+       eventType: "synchronous",
+     },
+   ];
+
+  /*const hangupAction = [
     {
       action: "talk",
       eventType: "synchronous",
@@ -139,7 +139,7 @@ function sendVonageMessage(teneoResponse, post, res) {
       bargeIn: false,
       loop: 1,
     },
-  ];
+  ];*/
 
   // https://developer.nexmo.com/voice/voice-api/ncco-reference
   const transferAction = [

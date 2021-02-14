@@ -2,7 +2,7 @@
 
 Click the button below to deploy the connector to Heroku:
 
-[![Deploy](https://www.herokucdn.com/deploy/button.svg?classes=noborder)](https://heroku.com/deploy?template=https://github.com/pomegran/vonage-voice-teneo)
+[![Deploy](https://www.herokucdn.com/deploy/button.svg?classes=noborder)](https://heroku.com/deploy?template=https://github.com/delsolarvaldes/vonage-voice-teneo)
 
 In the 'Config Vars' section, add the following (required):
 * **TENEO_ENGINE_URL:** The engine url
