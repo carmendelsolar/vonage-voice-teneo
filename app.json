@@ -8,10 +8,10 @@
         "Teneo",
         "Voice"
     ],
-    "repository": "https://github.com/pomegran/vonage-voice-teneo",
+    "repository": "https://github.com/delsolarvaldes/vonage-voice-teneo",
     "env": {
         "WEBHOOK_FOR_VONAGE": {
-            "description": "Webhook for Vonage Voice i.e. the server it will send messages to i.e. external address for server this application runs on",
+            "description": "Webhook for Vonage Voice i.e. the server it will send messages to i.e. external address for server this application runs on (local, NGROK, Heroku, etc.)",
             "required":true
         },
         "PATH_TO_ANSWER": {
@@ -27,12 +27,20 @@
             "required":true
         }, 
         "LANGUAGE_ASR": {
-            "description": "Please enter your Vonage Language for voice recognition (ASR).  Defaults to 'en-GB'.  List is here: https://developer.nexmo.com/voice/voice-api/guides/asr#language",
+            "description": "Please enter your Vonage Language for voice recognition (ASR).  Defaults to 'en-US'.  List is here: https://developer.nexmo.com/voice/voice-api/guides/asr#language",
             "required":false
         },        
-        "VOICENAME": {
-            "description": "Please enter your Vonage Language for spoken voice (TTS).  Defaults to 'Amy'.  List here: https://developer.nexmo.com/voice/voice-api/guides/text-to-speech#voice-names",
+        "BARGEIN_ASR": {
+            "description": "Please enter your preferred configuration (true/false) for the barge-in feature (ASR).  Defaults to false.  Details here: https://developer.nexmo.com/voice/voice-api/guides/asr#barge-in",
             "required":false
-        }        
+        },        
+        "LANGUAGE_TTS": {
+            "description": "Please enter your Vonage Language for spoken voice (TTS).  Defaults to 'en-US'.  List here: https://developer.nexmo.com/voice/voice-api/guides/text-to-speech#supported-languages",
+            "required":false
+        },        
+        "LANGUAGE_STYLE": {
+            "description": "Please enter your Vonage Style for spoken voice (TTS).  Defaults to 2.  List here: https://developer.nexmo.com/voice/voice-api/guides/text-to-speech#locale",
+            "required":false
+        }          
     }
 }
