@@ -25,32 +25,38 @@ const {
   PATH_TO_ANSWER,
   TENEO_ENGINE_URL,
   LANGUAGE_ASR,
-  VOICENAME,
+  BARGEIN_ASR,
+  LANGUAGE_TTS,
+  STYLE_TTS,
   PORT,
 } = process.env;
 const port = PORT || 1337;
 const teneoApi = TIE.init(TENEO_ENGINE_URL);
-const language_ASR = LANGUAGE_ASR || "en-GB"; // Final list to be added at a later date
-const voiceName = VOICENAME || "Amy"; // See: https://developer.nexmo.com/voice/voice-api/guides/text-to-speech
+const language_ASR = LANGUAGE_ASR || "en-US"; // Final list to be added at a later date
+const bargein_ASR = BARGEIN_ASR || false; 
+const language_TTS = LANGUAGE_TTS || "en-US"; //See: https://developer.nexmo.com/voice/voice-api/guides/text-to-speech#supported-languages
+const style_TTS = STYLE_TTS || 2; //See: https://developer.nexmo.com/voice/voice-api/guides/text-to-speech#supported-languages
 const pathToAnswer = PATH_TO_ANSWER || "/webhooks/answer";
 
 console.log("LANGUAGE (for ASR): " + language_ASR);
-console.log("VOICENAME (for TTS): " + voiceName);
+console.log("BARGEIN (for ASR): " + bargein_ASR);
+console.log("LANGUAGE (for TTS): " + language_TTS);
+console.log("STYLE (for TTS): " + style_TTS);
 
-// initialise session handler, to store mapping between twillio CallSid and engine session id
+// Initialize session handler, to store mapping between Vonage call id and Teneo Engine session id
 const sessionHandler = SessionHandler();
 
-// initialize an Express application
+// Initialize an Express application
 const app = express();
 const router = express.Router();
 
-// Tell express to use this router with /api before.
+// Tell express to use this router with /api before
 app.use("/", router);
 
 // Vonage message comes in
 router.post(pathToAnswer, handleVonageMessages(sessionHandler));
 
-// Handle incoming vonage message
+// Handle incoming Vonage message
 function handleVonageMessages(sessionHandler) {
   return (req, res) => {
     let body = "";
@@ -78,36 +84,37 @@ function handleVonageMessages(sessionHandler) {
       }
       console.log(`userInput: ${userInput}`);
 
-      // send input to engine using stored sessionid and retreive response
+      // Send input to Teneo Engine using stored sessionid and retreive response
       const teneoResponse = await teneoApi.sendInput(teneoSessionId, {
         text: userInput,
         channel: "vonage_voice",
       });
       console.log(`teneoResponse: ${teneoResponse.output.text}`);
 
-      // store engine sessionid for this caller
+      // Store engine sessionid for this caller
       sessionHandler.setSession(conversation_uuid, teneoResponse.sessionId);
 
-      // prepare message to return to Vonage
+      // Prepare message to return to Vonage
       sendVonageMessage(teneoResponse, post, res);
     });
   };
 }
 
 function sendVonageMessage(teneoResponse, post, res) {
-  console.log("Sending vonage a message");
+  console.log("Sending Vonage a message");
   const ncco = [
     {
       action: "talk",
       text: teneoResponse.output.text,
-      voiceName: voiceName,
-      bargeIn: false,
+      language: language_TTS,
+      style: style_TTS,
+      bargeIn: bargein_ASR,
       loop: 1,
     },
     {
       action: "input",
       speech: {
-        language: "en-gb",
+        language: language_ASR,
         uuid: [post.uuid],
         endOnSilence: 1,
       },
@@ -115,39 +122,41 @@ function sendVonageMessage(teneoResponse, post, res) {
     },
   ];
 
-  const hangupAction = [
+  /*const hangupAction = [
      {
        action: "talk",
        eventType: "synchronous",
        text: teneoResponse.output.text,
-       voiceName: voiceName,
-       bargeIn: false,
+       language: language_TTS,
+       style: style_TTS,
+       bargeIn: bargein_ASR,
        loop: 1,
      },
      {
        action: "hangup",
        eventType: "synchronous",
      },
-   ];
+   ];*/
 
-  /*const hangupAction = [
+  const hangupAction = [
     {
-      action: "talk",
-      eventType: "synchronous",
+      action: "hangup",
       text: teneoResponse.output.text,
-      voiceName: voiceName,
+      language: language_TTS,
+      style: style_TTS,
       bargeIn: false,
       loop: 1,
     },
-  ];*/
+  ];
 
   // https://developer.nexmo.com/voice/voice-api/ncco-reference
   const transferAction = [
     {
       action: "talk",
       text: teneoResponse.output.text,
-      voiceName: voiceName,
-      bargeIn: false,
+      language: language_TTS,
+      style: style_TTS,
+      bargeIn: bargein_ASR,
       loop: 1,
     },
     {
@@ -166,7 +175,7 @@ function sendVonageMessage(teneoResponse, post, res) {
 
   res.writeHead(200, { "Content-Type": "application/json" });
   if (teneoResponse.output.parameters.hangup) {
-    console.log("Teneo instructs Vonage to Hangup");
+    console.log("Teneo instructs Vonage to hang up");
     res.end(JSON.stringify(hangupAction));
   } else if (teneoResponse.output.parameters.liveChat) {
     console.log(
